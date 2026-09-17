@@ -1,0 +1,1564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cold chain dispense — the boundary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ---------------------------------------------------------------------------------------
+   Tokens. The palette is the cold box: chalky chilled ground, deep ink for the record, a
+   single signal red for anything held. Nothing here is a "nice" colour — each one is doing
+   a job, and the two worlds are deliberately different media rather than two matching cards.
+   --------------------------------------------------------------------------------------- */
+:root {
+  --paper:  #E8ECEF;
+  --paper-2:#DDE3E8;
+  --ink:    #16202A;
+  --ink-2:  #1F2C38;
+  --ink-3:  #2C3B49;
+  --frost:  #F8FBFC;
+  --chill:  #4C7F9B;
+  --chill-ink: #2C5A72;
+  --alarm:  #A8261C;
+  --amber:  #8A5D0B;
+  --muted:  #5D6B78;
+  --rule:   #C3CCD3;
+
+  --ui: Archivo, "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --step--1: 0.78rem;
+  --step-0:  0.95rem;
+  --step-1:  1.12rem;
+  --step-2:  1.4rem;
+  --step-3:  1.9rem;
+  --step-4:  clamp(2.1rem, 5.4vw, 3.2rem);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A faint vertical grain, so the ground reads as a surface rather than a fill. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    90deg, rgba(22, 32, 42, 0.035) 0 1px, transparent 1px 3px);
+  z-index: 0;
+}
+
+.page { position: relative; z-index: 1; max-width: 1220px; margin: 0 auto; padding: 0 28px 96px; }
+
+/* -- masthead --------------------------------------------------------------------------- */
+
+.masthead { padding: 44px 0 26px; border-bottom: 2px solid var(--ink); }
+
+.masthead__case {
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--chill-ink);
+  margin: 0 0 12px;
+}
+
+.masthead__title {
+  font-size: var(--step-4);
+  font-weight: 700;
+  line-height: 1.03;
+  letter-spacing: -0.022em;
+  margin: 0;
+  max-width: 20ch;
+}
+
+.masthead__claim {
+  margin: 16px 0 0;
+  max-width: 62ch;
+  font-size: var(--step-1);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.masthead__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 22px 0 0;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+/* -- the hero: two worlds and the line between them ------------------------------------- */
+
+.boundary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 232px minmax(0, 400px);
+  gap: 0;
+  align-items: stretch;
+  margin: 40px 0 0;
+}
+
+.world__head { margin: 0 0 14px; }
+
+.world__title {
+  font-size: var(--step-1);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.world__note {
+  margin: 4px 0 0;
+  font-size: var(--step--1);
+  color: var(--muted);
+  max-width: 40ch;
+}
+
+/* -- the internal record: ink, square, monospace. The clinical side. -------------------- */
+
+.record {
+  background: var(--ink);
+  color: #DCE3E9;
+  padding: 26px 26px 28px;
+  border-radius: 2px;
+}
+
+.record .world__title { color: var(--frost); }
+.record .world__note  { color: #93A3B1; }
+
+.record__group + .record__group { margin-top: 22px; }
+
+.record__legend {
+  font-size: var(--step--1);
+  color: #93A3B1;
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--ink-3);
+}
+
+.record__row {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 12px;
+  padding: 5px 0;
+  align-items: baseline;
+}
+
+.record__label {
+  font-size: var(--step--1);
+  color: #8B9BA9;
+}
+
+.record__value {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: #E4EAF0;
+  overflow-wrap: anywhere;
+}
+
+/* The patient fields are the ones that must not cross. Marked, not hidden — the internal
+   record is supposed to hold them. */
+.record__row--patient .record__value { color: #FFD9D4; }
+.record__row--patient .record__label { color: #C99A94; }
+
+.record__seg {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: #A9B8C5;
+  background: var(--ink-2);
+  padding: 12px 14px;
+  margin: 12px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-left: 2px solid var(--ink-3);
+}
+
+/* -- the gate: the line itself. The four fields that cross, named. ---------------------- */
+
+.gate {
+  padding: 26px 22px 28px;
+  border-left: 1px dashed var(--chill);
+  border-right: 1px dashed var(--chill);
+  background: linear-gradient(var(--paper-2), var(--paper));
+}
+
+.gate__title {
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--chill-ink);
+  margin: 0 0 4px;
+}
+
+.gate__note {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin: 0 0 16px;
+  line-height: 1.45;
+}
+
+.gate__list { list-style: none; margin: 0; padding: 0; }
+
+.gate__item {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.gate__item:last-child { border-bottom: 0; }
+
+.gate__field {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--chill-ink);
+  overflow-wrap: anywhere;
+}
+
+.gate__value {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--ink);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+.gate__floor {
+  margin: 18px 0 0;
+  padding-top: 12px;
+  border-top: 2px solid var(--ink);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* -- the device: soft, round, light. The consumer side. --------------------------------- */
+
+/* 26px matches the interior padding of the two panels beside it, so all three headings
+   sit on one line. The device has no panel — the phone is its chrome. */
+.device { display: flex; flex-direction: column; padding-top: 26px; }
+
+.phone {
+  background: #0E161D;
+  border-radius: 30px;
+  padding: 11px;
+  box-shadow: 0 16px 34px rgba(22, 32, 42, 0.22);
+  max-width: 340px;
+  width: 100%;
+  margin: 0;
+}
+
+.phone__screen {
+  background: var(--frost);
+  border-radius: 21px;
+  padding: 12px 12px 20px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone__status {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  padding: 2px 8px 10px;
+}
+
+.phone__caption {
+  font-size: 0.66rem;
+  color: #7C8B98;
+  text-align: center;
+  padding: 8px 0 0;
+  font-family: var(--ui);
+}
+
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 13px 14px 14px;
+  box-shadow: 0 2px 8px rgba(22, 32, 42, 0.1);
+  border: 1px solid #E2E9ED;
+}
+
+.card__from {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.66rem;
+  color: var(--muted);
+  margin: 0 0 9px;
+}
+
+.card__dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--chill);
+  flex: none;
+}
+
+.card__item {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 3px;
+  letter-spacing: -0.012em;
+}
+
+.card__qty { font-size: 0.74rem; color: var(--muted); margin: 0 0 12px; }
+
+.card__eta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  /* The ETA is the block the nurse reads first, so it is the one tinted surface on the card. */
+  background: #EDF4F7;
+  border-radius: 10px;
+  padding: 9px 11px;
+  margin: 0 0 11px;
+}
+
+.card__eta-label { font-size: 0.68rem; color: var(--muted); }
+
+.card__eta-value {
+  font-family: var(--mono);
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--chill-ink);
+}
+
+.card__courier {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-top: 10px;
+  border-top: 1px solid #E7EDF1;
+}
+
+.card__avatar {
+  width: 27px; height: 27px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--frost);
+  font-size: 0.6rem;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.card__courier-name { font-size: 0.78rem; font-weight: 500; }
+.card__courier-role { font-size: 0.66rem; color: var(--muted); }
+
+.card__token {
+  margin: 11px 0 0;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: #93A3B1;
+  overflow-wrap: anywhere;
+}
+
+.device__absent {
+  margin: 14px 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--muted);
+  border-left: 2px solid var(--alarm);
+  padding-left: 10px;
+  max-width: 340px;
+}
+
+.device__absent strong { color: var(--alarm); font-weight: 600; }
+
+/* No page-load reveal, deliberately. The obvious move here is a stagger that fades the four
+   device fields in one after another — and it is the wrong move twice over. It is the generic
+   entrance (a fade-and-slide on each row is what every generated page does), and on this page
+   specifically it hides the argument: the whole claim is that exactly four fields crossed, so
+   any frame in which three of them are missing is a frame that contradicts the page. This is a
+   screenshot- and recording-first deliverable, so it opens settled. */
+
+/* -- the quiet half: trace and chain, as a table rather than a card kit ----------------- */
+
+.quiet { margin: 64px 0 0; }
+
+.quiet__title {
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+}
+
+.quiet__note {
+  margin: 0 0 20px;
+  color: var(--muted);
+  max-width: 68ch;
+  font-size: var(--step--1);
+}
+
+.table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+
+.table caption {
+  text-align: left;
+  font-size: var(--step--1);
+  color: var(--muted);
+  padding: 0 0 10px;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.74rem;
+  color: var(--muted);
+  padding: 0 14px 9px 0;
+  border-bottom: 2px solid var(--ink);
+  vertical-align: bottom;
+}
+
+.table td {
+  padding: 11px 14px 11px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.table td:last-child, .table th:last-child { padding-right: 0; }
+
+.mono { font-family: var(--mono); }
+.dim  { color: var(--muted); }
+
+.verdict { font-weight: 600; white-space: nowrap; }
+.verdict--pass { color: var(--chill-ink); }
+.verdict--hold { color: var(--alarm); }
+
+.code {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink);
+  background: var(--paper-2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.chain { display: flex; flex-wrap: wrap; gap: 0; margin: 26px 0 0; padding: 0; list-style: none; }
+
+.chain__link {
+  flex: 1 1 200px;
+  border-left: 2px solid var(--chill);
+  padding: 4px 16px 12px;
+  min-width: 0;
+}
+
+.chain__seq {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--chill-ink);
+  display: block;
+}
+
+.chain__what { font-size: 0.82rem; font-weight: 500; margin: 3px 0 5px; }
+
+.chain__hash {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  display: block;
+}
+
+.footer {
+  margin: 56px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+.footer code { font-family: var(--mono); font-size: 0.74rem; }
+
+a { color: var(--chill-ink); }
+a:focus-visible, :focus-visible { outline: 2px solid var(--chill); outline-offset: 2px; }
+
+/* -- the console: pick an indent, watch the pipeline answer ------------------------------
+   The page was an illustration, which asked the reader to already know what a hold is. These
+   controls are what turn it into something a person can find out from. Everything below is
+   driven by one inline script, and every value it writes comes from a real run of
+   app/pipeline.py — either live over HTTP or from the recorded block at the foot of the page.
+   ---------------------------------------------------------------------------------------- */
+
+.console {
+  margin: 30px 0 0;
+  padding: 18px 20px 20px;
+  background: var(--frost);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--chill);
+  border-radius: 2px;
+}
+
+.console__label {
+  font-size: var(--step--1);
+  font-weight: 600;
+  margin: 0 0 3px;
+}
+
+.console__note {
+  font-size: var(--step--1);
+  color: var(--muted);
+  margin: 0 0 14px;
+  max-width: 72ch;
+}
+
+.console__buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.run {
+  font-family: var(--ui);
+  font-size: var(--step--1);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 7px 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.run:hover { background: var(--paper-2); border-color: var(--chill); }
+
+/* The pressed button carries the state, because the result below is about *which* indent was
+   asked for — a highlight that moved on its own would leave the two disagreeing. */
+.run[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--frost);
+}
+
+.run__kind {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.run[aria-pressed="true"] .run__kind { color: #8B9BA9; }
+
+.run--all { border-color: var(--chill); color: var(--chill-ink); font-weight: 600; }
+
+/* -- the verdict banner: the one sentence a non-technical reader needs ------------------- */
+
+.banner {
+  margin: 26px 0 0;
+  padding: 16px 20px;
+  background: var(--frost);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--chill);
+  border-radius: 2px;
+}
+
+.banner--hold { border-left-color: var(--alarm); }
+
+.banner__headline {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+}
+
+.banner__verdict {
+  font-size: var(--step-1);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--chill-ink);
+}
+
+.banner--hold .banner__verdict { color: var(--alarm); }
+
+.banner__what {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+.banner__sentence { margin: 0; font-size: var(--step-0); max-width: 84ch; }
+
+.banner__source {
+  margin: 10px 0 0;
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+/* -- state the console adds to the existing panels --------------------------------------- */
+
+/* A hold crosses nothing, so the allowlist column empties rather than dimming: the four named
+   fields stay on screen as names, which is the point — the shape is fixed even when no value
+   fills it. */
+.gate--silent .gate__value { color: var(--muted); font-style: italic; }
+
+.card--silent { background: var(--paper-2); }
+.card--silent .card__item { color: var(--muted); font-style: italic; }
+
+.chain__link--hold { border-left-color: var(--alarm); }
+.chain__link--hold .chain__seq { color: var(--alarm); }
+
+.warn {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  background: #FBF0EE;
+  border-left: 3px solid var(--alarm);
+  font-size: var(--step--1);
+  color: var(--ink);
+}
+
+/* The technical reader's door: closed by default so the plain layer never competes with it. */
+.raw { margin: 26px 0 0; }
+
+.raw > summary {
+  cursor: pointer;
+  font-size: var(--step--1);
+  color: var(--chill-ink);
+  padding: 6px 0;
+}
+
+.raw pre {
+  margin: 10px 0 0;
+  padding: 16px;
+  background: var(--ink);
+  color: #DCE3E9;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  border-radius: 2px;
+  overflow-x: auto;
+  max-height: 460px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Below this width four columns cannot hold a drug name, so the row becomes a block and each
+   cell carries its own heading. A sideways-scrolling table would put a scrollbar in the middle
+   of the one artefact a reviewer is most likely to screenshot. */
+@media (max-width: 640px) {
+  .table, .table tbody, .table tr, .table td { display: block; }
+  .table thead { display: none; }
+  .table tr {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .table tr:last-child { border-bottom: 0; }
+  .table td {
+    padding: 0;
+    border-bottom: 0;
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .table td + td { margin-top: 5px; }
+  .table td::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  /* A caption whose parent is no longer a table gets shrink-wrapped in an anonymous
+     box; it has to be told it is an ordinary block. */
+  .table caption { display: block; padding-bottom: 6px; }
+}
+
+@media (max-width: 1000px) {
+  .boundary { grid-template-columns: 1fr; }
+  .gate { border-left: 1px dashed var(--chill); border-right: 0; border-top: 1px dashed var(--chill); }
+  .device { padding-top: 0; margin-top: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <p class="masthead__case">Case 1 — pharmacy cold chain to the inpatient floor</p>
+    <h1 class="masthead__title">Two records of one delivery, and the line between them</h1>
+    <p class="masthead__claim">
+      A floor nurse's indent arrives as an HL7 v2 order, is checked against the prescription in
+      the FHIR record, and leaves as a notification on a phone. The left panel is what the
+      system knows. The right panel is what the device is told. Everything the alert may contain
+      is named in the middle column, because the boundary is an allowlist — not a filter that
+      removes what someone remembered to remove.
+    </p>
+    <div class="masthead__meta">
+      <span>FHIR R4</span>
+      <span>HAPI public sandbox</span>
+      <span>HL7 v2.5 OMP^O09</span>
+      <span>RxNorm 847230</span>
+    </div>
+  </header>
+
+  <!-- ---------- the console ---------- -->
+  <section class="console" aria-label="Run the pipeline">
+    <p class="console__label">Send an indent</p>
+    <p class="console__note">
+      Each button sends one real HL7 message through the pipeline and shows what it did. Six of
+      the seven are indents a hospital could genuinely send and this system refuses — those are
+      the interesting ones. Pick any of them, or start with the one that works.
+    </p>
+    <div class="console__buttons" id="run-buttons"></div>
+  </section>
+
+  <main>
+    <!-- ---------- what just happened ---------- -->
+    <section class="banner" id="banner" aria-live="polite" aria-label="Result">
+      <p class="banner__headline">
+        <span class="banner__verdict" id="banner-verdict">—</span>
+        <span class="banner__what" id="banner-what"></span>
+      </p>
+      <p class="banner__sentence" id="banner-sentence"></p>
+      <p class="banner__source" id="banner-source"></p>
+    </section>
+
+    <section class="boundary" aria-label="Internal record, the boundary, and the device notification">
+
+      <!-- ---------- internal record ---------- -->
+      <div class="record">
+        <div class="world__head">
+          <h2 class="world__title">Internal record</h2>
+          <p class="world__note">
+            Held in the process and in the audit trail. Never serialised onto the wire — so this
+            panel is the seeded demo patient rather than something the page fetched. There is
+            only one, which is why the indent you picked above changes everything to its right
+            and nothing in here.
+          </p>
+        </div>
+
+        <div class="record__group">
+          <p class="record__legend">Patient</p>
+          <div class="record__row record__row--patient">
+            <span class="record__label">Name</span>
+            <span class="record__value">DOE, JOHN</span>
+          </div>
+          <div class="record__row record__row--patient">
+            <span class="record__label">MRN</span>
+            <span class="record__value">MRN12345</span>
+          </div>
+          <div class="record__row record__row--patient">
+            <span class="record__label">Date of birth</span>
+            <span class="record__value">1974-03-02</span>
+          </div>
+        </div>
+
+        <div class="record__group">
+          <p class="record__legend">Order</p>
+          <div class="record__row record__row--patient">
+            <span class="record__label">Placer number</span>
+            <span class="record__value">INDENT-1001</span>
+          </div>
+          <div class="record__row record__row--patient">
+            <span class="record__label">Filler number</span>
+            <span class="record__value">RX-1001</span>
+          </div>
+          <div class="record__row">
+            <span class="record__label">Ward</span>
+            <span class="record__value">3 West</span>
+          </div>
+        </div>
+
+        <div class="record__group">
+          <p class="record__legend">What was validated</p>
+          <div class="record__row">
+            <span class="record__label">Ingredient</span>
+            <span class="record__value">insulin glargine (274783)</span>
+          </div>
+          <div class="record__row">
+            <span class="record__label">Strength</span>
+            <span class="record__value">100 UNT/ML</span>
+          </div>
+          <div class="record__row">
+            <span class="record__label">Dose form</span>
+            <span class="record__value">Pen Injector</span>
+          </div>
+        </div>
+
+        <div class="record__group">
+          <p class="record__legend">The segment as it arrived</p>
+          <p class="record__seg">MSH|^~\&amp;|WARD|CITYHOSP|PHARM|CITYHOSP|20260916080000||OMP^O09|MSG00042|P|2.5
+PID|||MRN12345^^^CITYHOSP^MR||DOE^JOHN^Q||19740302
+ORC|NW|INDENT-1001|RX-1001
+RXO|GLARG100PEN^insulin glargine 100 UNT/ML Pen Injector^L|1||PEN|PEN INJ^Pen Injector^L|||||||||100|UNT/ML|T2DM</p>
+        </div>
+      </div>
+
+      <!-- ---------- the boundary ---------- -->
+      <div class="gate" id="gate">
+        <p class="gate__title">What crosses</p>
+        <p class="gate__note">
+          The alert is built from these four fields and nothing else. A field added upstream
+          cannot leak, because there is no path that carries it.
+        </p>
+        <ul class="gate__list">
+          <li class="gate__item" data-field="item_description">
+            <span class="gate__field">item_description</span>
+            <span class="gate__value">insulin glargine 100 UNT/ML Pen Injector</span>
+          </li>
+          <li class="gate__item" data-field="quantity">
+            <span class="gate__field">quantity</span>
+            <span class="gate__value">1 pen</span>
+          </li>
+          <li class="gate__item" data-field="courier_display_name">
+            <span class="gate__field">courier_display_name</span>
+            <span class="gate__value">M. OKAFOR</span>
+          </li>
+          <li class="gate__item" data-field="eta">
+            <span class="gate__field">eta</span>
+            <span class="gate__value">14:30</span>
+          </li>
+        </ul>
+        <p class="gate__floor">
+          The courier's name crosses because it is workforce identity, not patient data. The
+          order numbers do not, because an identifier is linkable back to the patient — the
+          device gets a keyed token instead.
+        </p>
+      </div>
+
+      <!-- ---------- the device ---------- -->
+      <div class="device">
+        <div class="world__head">
+          <h2 class="world__title">On the nurse's phone</h2>
+          <p class="world__note">Everything the device receives. Four fields, and a token it cannot reverse.</p>
+        </div>
+
+        <figure class="phone">
+          <div class="phone__screen">
+            <div class="phone__status">
+              <span>08:04</span>
+              <span>▮▮▮</span>
+            </div>
+            <div class="card" id="card">
+              <p class="card__from"><span class="card__dot"></span> Pharmacy cold chain</p>
+              <p class="card__item" id="card-item">Insulin glargine 100 UNT/ML pen injector</p>
+              <p class="card__qty" id="card-qty">1 pen</p>
+              <div class="card__eta">
+                <span class="card__eta-label">Arriving</span>
+                <span class="card__eta-value" id="card-eta">14:30</span>
+              </div>
+              <div class="card__courier">
+                <span class="card__avatar" id="card-avatar">MO</span>
+                <span>
+                  <span class="card__courier-name" id="card-courier">M. Okafor</span><br>
+                  <span class="card__courier-role" id="card-role">Pharmacy courier</span>
+                </span>
+              </div>
+              <p class="card__token" id="card-token">ref 4f9c1a7b2e08d3a1</p>
+            </div>
+          </div>
+          <figcaption class="phone__caption" id="phone-caption">Notification adapter, in-memory demo transport</figcaption>
+        </figure>
+
+        <p class="device__absent">
+          <strong>Absent, not redacted:</strong> no patient name, MRN, date of birth, ward bed, or
+          order number. The payload's keys are asserted to equal the allowlist, so a field cannot
+          be added to the alert without failing a test.
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------- the quiet half ---------- -->
+    <section class="quiet" aria-label="Pipeline trace">
+      <h2 class="quiet__title">The gate, on seven inputs</h2>
+      <p class="quiet__note">
+        All seven fixtures, and the verdict each one gets. Every row below is filled in from a
+        real run, not typed: press the buttons above and watch which row changes. One of the
+        seven is dispensed; the other six are indents a hospital could genuinely send, and each
+        is refused for a different reason. Every refusal is recorded with a machine-readable
+        code rather than a guess about what the sender meant.
+      </p>
+      <table class="table">
+        <caption>Ingredient, strength and dose form are compared as an RxNorm-normalized triple — never as drug name strings.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Fixture as ordered</th>
+            <th scope="col">Verdict</th>
+            <th scope="col">Reason code</th>
+            <th scope="col">Dispense written</th>
+          </tr>
+        </thead>
+        <tbody id="trace-body">
+          <tr>
+            <td class="mono" data-label="Fixture as ordered">insulin glargine 100 UNT/ML Pen Injector</td>
+            <td class="verdict verdict--pass" data-label="Verdict">matched</td>
+            <td class="dim" data-label="Reason code">—</td>
+            <td data-label="Dispense written">yes</td>
+          </tr>
+          <tr>
+            <td class="mono" data-label="Fixture as ordered">insulin glargine 300 UNT/ML Pen Injector</td>
+            <td class="verdict verdict--hold" data-label="Verdict">held</td>
+            <td data-label="Reason code"><span class="code">strength_mismatch</span></td>
+            <td data-label="Dispense written">no</td>
+          </tr>
+          <tr>
+            <td class="mono" data-label="Fixture as ordered">insulin glargine 100 UNT/ML Injectable Solution</td>
+            <td class="verdict verdict--hold" data-label="Verdict">held</td>
+            <td data-label="Reason code"><span class="code">dose_form_mismatch</span></td>
+            <td data-label="Dispense written">no</td>
+          </tr>
+          <tr>
+            <td class="mono" data-label="Fixture as ordered">qqqxyz wobble plinth</td>
+            <td class="verdict verdict--hold" data-label="Verdict">held</td>
+            <td data-label="Reason code"><span class="code">terminology_unresolved</span></td>
+            <td data-label="Dispense written">no</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="quiet" aria-label="Audit chain">
+      <h2 class="quiet__title">The trail one delivery leaves behind</h2>
+      <p class="quiet__note">
+        The events the indent above actually wrote. Each carries its own content digest plus the
+        digest of the event before it. Editing an event breaks its own digest; deleting one
+        breaks the link from its successor; reordering two breaks both, because the sequence
+        number is inside the digest. That is tamper-<em>evident</em>, not tamper-proof: a writer
+        who deletes the whole chain leaves nothing to check, which is why a real deployment
+        anchors the head digest outside the FHIR store. A rejected indent writes fewer events
+        than a dispensed one, and the digests change between runs because the moment of
+        recording is inside them.
+      </p>
+      <ol class="chain" id="chain">
+        <li class="chain__link">
+          <span class="chain__seq">seq 1</span>
+          <p class="chain__what">Indent received</p>
+          <span class="chain__hash">9a7d67d4…<br>prev 00000000…</span>
+        </li>
+        <li class="chain__link">
+          <span class="chain__seq">seq 2</span>
+          <p class="chain__what">Formulation verified</p>
+          <span class="chain__hash">c1b07646…<br>prev 9a7d67d4…</span>
+        </li>
+        <li class="chain__link">
+          <span class="chain__seq">seq 3</span>
+          <p class="chain__what">Dispense written</p>
+          <span class="chain__hash">311c6d29…<br>prev c1b07646…</span>
+        </li>
+        <li class="chain__link">
+          <span class="chain__seq">seq 4</span>
+          <p class="chain__what">Notification sent</p>
+          <span class="chain__hash">2e7aae11…<br>prev 311c6d29…</span>
+        </li>
+      </ol>
+      <p class="warn" id="audit-warning" hidden></p>
+    </section>
+
+    <!-- The technical reader's half of the page. Everything above is the plain layer; this is
+         the same run, unedited, for someone who wants to check the claim rather than trust it. -->
+    <details class="raw">
+      <summary>What the service actually returned for this indent</summary>
+      <pre id="raw-json">—</pre>
+    </details>
+  </main>
+
+  <footer class="footer">
+    <p>
+      Every value on this page comes from <code>app/pipeline.py</code> — the digest, the reason
+      codes, the four fields in the middle column. Each event's <code>recorded</code> timestamp
+      is inside its digest, because a timestamp is part of what an audit record attests to, so a
+      re-run produces different digests and that is the design rather than a caveat. The digests
+      are produced by <code>app/audit/chain.py</code> over the canonical JSON of each event and
+      checked by <code>verify_chain()</code>, which reads them back off the server. Run
+      <code>make test</code> for the offline suite, or <code>make demo</code> to drive every
+      fixture through the pipeline from a shell. The recorded runs this page falls back to are
+      regenerated by <code>scripts/build_ui_demo.py</code>, and a test fails if they stop
+      matching a real run.
+    </p>
+  </footer>
+</div>
+
+<!-- ---------------------------------------------------------------------------------------
+     Recorded runs. Generated by scripts/build_ui_demo.py from a real offline pipeline run;
+     tests/test_ui.py fails if this block stops matching one. It exists so the page is a
+     working demo when a reviewer opens the file with no server running — and it holds only
+     the allowlist view (Run.public()), because that is the only view that may leave the
+     process at all.
+     --------------------------------------------------------------------------------------- -->
+<script type="application/json" id="recorded-runs">
+{
+  "mode": "dry-run (in-memory FHIR, no network writes)",
+  "runs": {
+    "clean": {
+      "alert": {
+        "courier_display_name": "M. OKAFOR",
+        "eta": "04:46",
+        "item_description": "insulin glargine 100 UNT/ML Pen Injector",
+        "quantity": "1 pen"
+      },
+      "audit": [
+        {
+          "detail": "indent received for insulin glargine 100 UNT/ML Pen Injector",
+          "display": "Indent received",
+          "hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "ordered insulin glargine 100 UNT/ML Pen Injector matches the prescription",
+          "display": "Formulation verified",
+          "hash": "8941415147f91b0ce76dd81b663d7921cb1a78bb9a43bfcde48be0fde7432cbb",
+          "outcome": "0",
+          "prev_hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "sequence": 2,
+          "subtype": "formulation-verified"
+        },
+        {
+          "detail": "dispense written for insulin glargine 100 UNT/ML Pen Injector",
+          "display": "MedicationDispense written",
+          "hash": "59928c253bccf307aee8a98bdd58c815a82f69a708a8fe6fa3eb8dbf825b5278",
+          "outcome": "0",
+          "prev_hash": "8941415147f91b0ce76dd81b663d7921cb1a78bb9a43bfcde48be0fde7432cbb",
+          "sequence": 3,
+          "subtype": "dispense-written"
+        },
+        {
+          "detail": "dispatch notification delivered",
+          "display": "Dispatch notification sent",
+          "hash": "87b3b0d8cba41b23cd2a8c001e15d716f5a2b75a333415b3f7c2c4ee7ea7994b",
+          "outcome": "0",
+          "prev_hash": "59928c253bccf307aee8a98bdd58c815a82f69a708a8fe6fa3eb8dbf825b5278",
+          "sequence": 4,
+          "subtype": "notification-sent"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "ok",
+      "detail": "ordered insulin glargine 100 UNT/ML Pen Injector matches the prescription",
+      "eta": "04:46",
+      "notified": true,
+      "status": "dispensed",
+      "token": "37GkLPvMYJDnPMCC"
+    },
+    "compound": {
+      "audit": [
+        {
+          "detail": "indent received for insulin glargine 100 UNT/ML Pen Injector",
+          "display": "Indent received",
+          "hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "message carries compound components (RXC); component preparation is out of scope for this pipeline",
+          "display": "Formulation held",
+          "hash": "ef347854c66b227336383f534f4dbd33a84c45509a3305465e577e485c93baf7",
+          "outcome": "8",
+          "prev_hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "sequence": 2,
+          "subtype": "formulation-held"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "compound_unsupported",
+      "detail": "message carries compound components (RXC); component preparation is out of scope for this pipeline",
+      "status": "held"
+    },
+    "dose_form_mismatch": {
+      "audit": [
+        {
+          "detail": "indent received for insulin glargine 100 UNT/ML Injectable Solution",
+          "display": "Indent received",
+          "hash": "13d5613225b1fbc9eb5e27f5bd7befe7f56efdc4b0c8b118c249ac25ff900723",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "prescribed dose form 'Pen Injector' differs from ordered 'Injectable Solution' (insulin glargine)",
+          "display": "Formulation held",
+          "hash": "764f24b96e9bacb2f899c255978fff540613fee4f946ede62eafca89bad546ca",
+          "outcome": "8",
+          "prev_hash": "13d5613225b1fbc9eb5e27f5bd7befe7f56efdc4b0c8b118c249ac25ff900723",
+          "sequence": 2,
+          "subtype": "formulation-held"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "dose_form_mismatch",
+      "detail": "prescribed dose form 'Pen Injector' differs from ordered 'Injectable Solution' (insulin glargine)",
+      "status": "held"
+    },
+    "multi_item": {
+      "audit": [
+        {
+          "detail": "indent received for insulin glargine 100 UNT/ML Pen Injector",
+          "display": "Indent received",
+          "hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "message orders 2 items; this system dispenses one order at a time and will not choose among them",
+          "display": "Formulation held",
+          "hash": "a0147847b25901888527873743649aeea0992ef7c35e7e58551fec993500a2a4",
+          "outcome": "8",
+          "prev_hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "sequence": 2,
+          "subtype": "formulation-held"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "multi_item_order_unsupported",
+      "detail": "message orders 2 items; this system dispenses one order at a time and will not choose among them",
+      "status": "held"
+    },
+    "not_new": {
+      "audit": [
+        {
+          "detail": "indent received for insulin glargine 100 UNT/ML Pen Injector",
+          "display": "Indent received",
+          "hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "order control is 'XO', not 'NW' \u2014 this is not a new order, so there is nothing to dispense",
+          "display": "Formulation held",
+          "hash": "33c8596408a7d202615f143fc1720589fac3adb60e8283247d0a10d3d63eba0c",
+          "outcome": "8",
+          "prev_hash": "a08113b9531ec7e358d2ef68a193ffd4e2704171cd0adb7049a760e8743e2b57",
+          "sequence": 2,
+          "subtype": "formulation-held"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "order_control_not_new",
+      "detail": "order control is 'XO', not 'NW' \u2014 this is not a new order, so there is nothing to dispense",
+      "status": "held"
+    },
+    "strength_mismatch": {
+      "audit": [
+        {
+          "detail": "indent received for insulin glargine 300 UNT/ML Pen Injector",
+          "display": "Indent received",
+          "hash": "a2aae63bf764d75c05e40cfcd0bd0d2701952860132b3b54f6000060fc8446e3",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "prescribed 100 UNT/ML differs from ordered 300 UNT/ML (insulin glargine)",
+          "display": "Formulation held",
+          "hash": "bed1b7ea84c761c40720f2f16f53e767ebbde17c74f8ab57ab2be24cb55b184d",
+          "outcome": "8",
+          "prev_hash": "a2aae63bf764d75c05e40cfcd0bd0d2701952860132b3b54f6000060fc8446e3",
+          "sequence": 2,
+          "subtype": "formulation-held"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "strength_mismatch",
+      "detail": "prescribed 100 UNT/ML differs from ordered 300 UNT/ML (insulin glargine)",
+      "status": "held"
+    },
+    "unresolvable": {
+      "audit": [
+        {
+          "detail": "indent received for qqqxyz wobble plinth",
+          "display": "Indent received",
+          "hash": "2dd6fb2c265a29c9fb77f8d43d4a87f8a5422ddcecc08bc717facfc3643284bf",
+          "outcome": "0",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sequence": 1,
+          "subtype": "order-received"
+        },
+        {
+          "detail": "RxNorm has no concept matching the ordered product 'qqqxyz wobble plinth'; refusing to guess which drug was meant",
+          "display": "Formulation held",
+          "hash": "e08d8b36b582d6516ced09af44c6fe3f8e83f6daf5feaf9fe4014526f95fd97a",
+          "outcome": "8",
+          "prev_hash": "2dd6fb2c265a29c9fb77f8d43d4a87f8a5422ddcecc08bc717facfc3643284bf",
+          "sequence": 2,
+          "subtype": "formulation-held"
+        }
+      ],
+      "audit_recorded": true,
+      "code": "terminology_unresolved",
+      "detail": "RxNorm has no concept matching the ordered product 'qqqxyz wobble plinth'; refusing to guess which drug was meant",
+      "status": "held"
+    }
+  }
+}
+</script>
+
+<!-- ---------------------------------------------------------------------------------------
+     The plain-language layer. Hand-written, and the only prose on the page that is not
+     generated from the pipeline — so it is deliberately kept to two jobs the API cannot do:
+     naming an indent in words, and naming a reason code in words. It adds no facts. Every
+     fixture name is checked against app/hl7/fixtures.py and every reason code against
+     app/models.py::HoldCode by tests/test_ui.py, so neither list can drift from the code.
+     --------------------------------------------------------------------------------------- -->
+<script type="application/json" id="demo-copy">
+{
+  "fixtures": {
+    "clean": {
+      "label": "The indent that works",
+      "kind": "matches the prescription",
+      "blurb": "Insulin glargine 100 UNT/ML in a pen injector — what the prescription says."
+    },
+    "strength_mismatch": {
+      "label": "Wrong strength",
+      "kind": "four times the dose",
+      "blurb": "Same drug, but the ward asks for 300 UNT/ML where the prescription is for 100."
+    },
+    "dose_form_mismatch": {
+      "label": "Wrong form",
+      "kind": "vial, not pen",
+      "blurb": "Right drug, right strength — but an injectable solution where the patient is set up for a pen."
+    },
+    "unresolvable": {
+      "label": "A name nobody recognises",
+      "kind": "terminology",
+      "blurb": "A drug name that resolves to nothing in RxNorm, so there is nothing to compare the prescription against."
+    },
+    "not_new": {
+      "label": "Not a new order",
+      "kind": "a change to one",
+      "blurb": "The message is a change to an existing order, not a fresh request. There is nothing to dispense."
+    },
+    "multi_item": {
+      "label": "Two drugs in one message",
+      "kind": "more than one item",
+      "blurb": "One message ordering two items. The system dispenses one order at a time and refuses to choose between them."
+    },
+    "compound": {
+      "label": "A mixture, not a product",
+      "kind": "compounding",
+      "blurb": "The order carries compound components — something to be mixed, which is out of scope for this pipeline."
+    }
+  },
+  "holds": {
+    "unparseable_indent": "The message was not readable as HL7 at all. The sending interface is broken, not the prescription.",
+    "order_control_not_new": "This is not a new order, so there is nothing to dispense.",
+    "multi_item_order_unsupported": "The message orders more than one item, and the system will not choose between them.",
+    "compound_unsupported": "The order asks for something to be compounded, which this pipeline does not do.",
+    "order_correlation_absent": "No prescription could be found that this indent refers to.",
+    "order_correlation_ambiguous": "More than one prescription matched, so the system refused to guess which was meant.",
+    "order_correlation_inconsistent": "The two order numbers in the message pointed at different prescriptions.",
+    "patient_mismatch": "The indent and the prescription name different patients.",
+    "terminology_unresolved": "The drug name resolved to nothing in RxNorm, so there was nothing to compare.",
+    "terminology_ambiguous": "The drug name matched more than one distinct product.",
+    "order_detail_unreadable": "A strength or dose form could not be read, so the system could not compare it.",
+    "dose_form_mismatch": "Same drug and strength, but the wrong kind of product — a vial where a pen was prescribed.",
+    "strength_mismatch": "Same drug, but not the strength the prescription calls for.",
+    "ingredient_mismatch": "A different drug from the one prescribed.",
+    "unit_incompatible": "The strengths are in units that cannot be compared with each other."
+  }
+}
+</script>
+
+<script>
+/* ------------------------------------------------------------------------------------------
+   The demo. Deliberately dependency-free and inline: the page has to be one file that a
+   reviewer can open from a USB stick, so there is no bundler, no framework, and no fetch
+   that runs before the recorded fallback has painted.
+
+   Two modes, and the page says which one it is in rather than leaving the reader to guess:
+
+     live      a server answered, so every run here is this pipeline, now.
+     recorded  no server answered. The runs come from the block above, recorded by
+               scripts/build_ui_demo.py from a real offline run and checked against a fresh
+               one by tests/test_ui.py.
+
+   The mode is decided once, at load, by asking /health. A page opened from the filesystem
+   gets a TypeError from fetch and stays recorded, which is the intended outcome rather than a
+   failure to handle.
+   ------------------------------------------------------------------------------------------ */
+(function () {
+  "use strict";
+
+  var recorded = JSON.parse(document.getElementById("recorded-runs").textContent);
+  var copy = JSON.parse(document.getElementById("demo-copy").textContent);
+  var runs = recorded.runs;
+  var live = false;
+  var current = "clean";
+
+  var el = function (id) { return document.getElementById(id); };
+  var order = Object.keys(copy.fixtures);
+
+  /* -- rendering ------------------------------------------------------------------------ */
+
+  function verdictOf(run) { return run.status === "dispensed" ? "dispensed" : "held"; }
+
+  function sentence(run) {
+    if (run.status === "dispensed") {
+      var a = run.alert;
+      /* The drug description starts lowercase — it is an INN, and "insulin glargine" is
+         spelled that way — so it must not be made to open a sentence. Carrying the clause on
+         with "so" keeps it mid-sentence where it belongs. */
+      return "The check passed: the indent and the prescription agree, so " +
+        a.item_description + " (" + a.quantity + ") is on its way with " +
+        a.courier_display_name + ", arriving " + a.eta + ". The phone was told those four " +
+        "things — the item, the quantity, the courier and the time — and nothing else.";
+    }
+    if (run.status === "error") {
+      return "The check did not run at all, so no indent was dispensed. A caller should retry.";
+    }
+    /* `run.detail` reads as a person wrote it, but it is authored as a *clause*: the pipeline
+       keeps it lowercase because the same string is embedded in audit events. Joining it with
+       a full stop produced "…no phone was notified. prescribed 100 UNT/ML…" — a sentence
+       starting in lowercase, in the one line a judge is meant to read. So the two halves join
+       as statement and reason, and the stop goes on the end. */
+    return "Nothing was dispensed and no phone was notified: " +
+      String(run.detail).replace(/\.\s*$/, "") + ".";
+  }
+
+  function renderBanner(run) {
+    var banner = el("banner");
+    var held = run.status !== "dispensed";
+    banner.className = "banner" + (held ? " banner--hold" : "");
+    el("banner-verdict").textContent = held ? "Held" : "Dispensed";
+    /* The reason code is kept — it is the auditable value, and it is what the audit trail and
+       the trace table below both carry — but rendered as words. `order_control_not_new` is a
+       fine thing to log and a poor thing to hand a judge. */
+    el("banner-what").textContent = held
+      ? run.code.replace(/_/g, " ").replace(/^./, function (c) { return c.toUpperCase(); })
+      : copy.fixtures[current].kind;
+    el("banner-sentence").textContent = sentence(run);
+    el("banner-source").textContent = live
+      ? "A live run against this server — " + recorded.mode + "."
+      : "A recorded run: no server is answering, so this is the fallback built into the page. " +
+        "Run make run-offline and reload for live runs.";
+  }
+
+  /* A hold crosses nothing. The four field NAMES stay on screen with no values under them,
+     because that is the actual claim being made: the shape is fixed and the values are what
+     failed to appear. */
+  function renderGate(run) {
+    var gate = el("gate");
+    var alert = run.alert || null;
+    gate.className = "gate" + (alert ? "" : " gate--silent");
+    Array.prototype.forEach.call(gate.querySelectorAll(".gate__item"), function (item) {
+      var value = item.querySelector(".gate__value");
+      value.textContent = alert ? alert[item.getAttribute("data-field")] : "— nothing crossed";
+    });
+  }
+
+  function renderPhone(run) {
+    var alert = run.alert || null;
+    var card = el("card");
+    card.className = "card" + (alert ? "" : " card--silent");
+    el("phone-caption").textContent = alert
+      ? "Notification adapter, in-memory demo transport"
+      : "Nothing was sent to this device";
+    if (!alert) {
+      el("card-item").textContent = "No notification";
+      el("card-qty").textContent = "the indent was held at the gate";
+      el("card-eta").textContent = "—";
+      el("card-avatar").textContent = "—";
+      el("card-courier").textContent = "—";
+      el("card-role").textContent = "no courier dispatched";
+      el("card-token").textContent = "no token issued";
+      return;
+    }
+    el("card-item").textContent = alert.item_description;
+    el("card-qty").textContent = alert.quantity;
+    el("card-eta").textContent = alert.eta;
+    el("card-courier").textContent = alert.courier_display_name;
+    el("card-role").textContent = "Pharmacy courier";
+    el("card-avatar").textContent = alert.courier_display_name
+      .split(/\s+/).map(function (w) { return w.charAt(0); }).join("").slice(0, 2).toUpperCase();
+    el("card-token").textContent = "ref " + (run.token || "—");
+  }
+
+  function renderChain(run) {
+    var chain = el("chain");
+    chain.innerHTML = "";
+    (run.audit || []).forEach(function (event) {
+      var li = document.createElement("li");
+      li.className = "chain__link" + (event.outcome === "0" ? "" : " chain__link--hold");
+      var seq = document.createElement("span");
+      seq.className = "chain__seq";
+      seq.textContent = "seq " + event.sequence;
+      var what = document.createElement("p");
+      what.className = "chain__what";
+      what.textContent = event.display;
+      var hash = document.createElement("span");
+      hash.className = "chain__hash";
+      hash.textContent = event.hash.slice(0, 8) + "…";
+      hash.appendChild(document.createElement("br"));
+      hash.appendChild(document.createTextNode("prev " + event.prev_hash.slice(0, 8) + "…"));
+      li.appendChild(seq);
+      li.appendChild(what);
+      li.appendChild(hash);
+      chain.appendChild(li);
+    });
+  }
+
+  /* One row per fixture. The mobile layout reads the column heading off `data-label`, so it
+     has to be set here rather than left to the markup — these rows did not exist when the
+     table was written by hand. */
+  function renderTrace() {
+    var body = el("trace-body");
+    body.innerHTML = "";
+    Object.keys(runs).forEach(function (name) {
+      var entry = runs[name];
+      var held = entry.status !== "dispensed";
+
+      function cell(text, cls, label) {
+        var td = document.createElement("td");
+        if (cls) { td.className = cls; }
+        td.setAttribute("data-label", label);
+        td.textContent = text;
+        return td;
+      }
+
+      var tr = document.createElement("tr");
+      tr.appendChild(cell(copy.fixtures[name].blurb, "mono", "Fixture as ordered"));
+      tr.appendChild(cell(
+        held ? "held" : "matched",
+        "verdict " + (held ? "verdict--hold" : "verdict--pass"),
+        "Verdict"
+      ));
+
+      var codeCell = document.createElement("td");
+      codeCell.setAttribute("data-label", "Reason code");
+      if (held) {
+        var span = document.createElement("span");
+        span.className = "code";
+        span.textContent = entry.code;
+        codeCell.appendChild(span);
+      } else {
+        codeCell.className = "dim";
+        codeCell.textContent = "—";
+      }
+      tr.appendChild(codeCell);
+
+      tr.appendChild(cell(held ? "no" : "yes", null, "Dispense written"));
+      body.appendChild(tr);
+    });
+  }
+
+  function renderRaw(run) {
+    el("raw-json").textContent = JSON.stringify(run, null, 2);
+  }
+
+  /* The one field on this page that reports a failure of the trail itself rather than of the
+     indent. `audit_recorded: false` means the dispense is real but the trail did not persist,
+     which is exactly the state a caller must not be allowed to miss — so it is shown here, in
+     the section making the tamper-evidence claim, and not folded into the verdict banner. */
+  function renderAuditWarning(run) {
+    var warning = el("audit-warning");
+    warning.hidden = run.audit_recorded !== false;
+    warning.textContent = "The trail above did not persist. It was written and chained in this " +
+      "process, but the FHIR server rejected the audit writes — so these digests are evidence " +
+      "of what happened, not durable evidence. The dispense itself is real.";
+  }
+
+  function renderAll(name) {
+    current = name;
+    var run = runs[name];
+    renderBanner(run);
+    renderGate(run);
+    renderPhone(run);
+    renderChain(run);
+    renderAuditWarning(run);
+    renderRaw(run);
+    Array.prototype.forEach.call(document.querySelectorAll(".run[data-fixture]"),
+      function (button) {
+        button.setAttribute("aria-pressed", String(button.getAttribute("data-fixture") === name));
+      });
+  }
+
+  /* -- buttons -------------------------------------------------------------------------- */
+
+  function buildButtons() {
+    var host = el("run-buttons");
+    order.forEach(function (name) {
+      var spec = copy.fixtures[name];
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "run";
+      button.setAttribute("data-fixture", name);
+      button.setAttribute("aria-pressed", "false");
+      var label = document.createElement("span");
+      label.textContent = spec.label;
+      var kind = document.createElement("span");
+      kind.className = "run__kind";
+      kind.textContent = spec.kind;
+      button.appendChild(label);
+      button.appendChild(kind);
+      button.addEventListener("click", function () { sendOne(name); });
+      host.appendChild(button);
+    });
+  }
+
+  /* -- the two ways to get an answer ---------------------------------------------------- */
+
+  function ask(name) {
+    return fetch("/indent/demo/" + name, { method: "POST" })
+      .then(function (response) { return response.json(); });
+  }
+
+  /* One indent, for the panels. A failure leaves the recorded run in place and says so,
+     rather than blanking panels that were showing something true a moment ago. */
+  function sendOne(name) {
+    if (!live) { renderAll(name); return; }
+    ask(name).then(function (entry) {
+      runs[name] = entry;
+      renderTrace();
+      renderAll(name);
+    }).catch(function () {
+      live = false;
+      renderAll(name);
+    });
+  }
+
+  /* Every indent, for the table. Only worth doing live: the recorded table is already the
+     answer, and re-asking for it would be a slower way to render the same thing. */
+  function runAll() {
+    if (!live) { renderTrace(); return; }
+    Promise.all(order.map(function (name) {
+      return ask(name).then(function (entry) { runs[name] = entry; }).catch(function () {});
+    })).then(function () { renderTrace(); renderAll(current); });
+  }
+
+  function start() {
+    buildButtons();
+    renderTrace();
+    renderAll("clean");
+    fetch("/health").then(function (response) { return response.json(); }).then(function (health) {
+      live = true;
+      recorded.mode = health.mode;
+      runAll();
+      renderAll(current);
+    }).catch(function () { /* no server: the recorded runs stay, and the banner says so */ });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>

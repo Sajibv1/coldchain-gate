@@ -1,0 +1,12 @@
+# Keep the upload to source only. The virtualenv alone is hundreds of megabytes and none
+# of it belongs in a serverless bundle — Vercel installs from requirements.txt instead.
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+# Both hold credentials — `.env` the app's, `.env.local` the short-lived OIDC token
+# `vercel link` writes. The app reads neither at runtime; api/index.py hard-codes its
+# configuration. Nothing here should ever reach a function bundle.
+.env
+.env.local

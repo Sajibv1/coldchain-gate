@@ -1,0 +1,728 @@
+{
+  "https://rxnav.nlm.nih.gov/REST/approximateTerm.json?term=insulin+glargine+100+UNT%2FML+Pen+Injector&maxEntries=10": {
+    "json": {
+      "approximateGroup": {
+        "candidate": [
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "1",
+            "rxaui": "12349643",
+            "rxcui": "1359855",
+            "score": "20.524337768554688",
+            "source": "RXNORM"
+          },
+          {
+            "name": "3 ML insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "2",
+            "rxaui": "12349644",
+            "rxcui": "847230",
+            "score": "19.685014934539797",
+            "source": "RXNORM"
+          },
+          {
+            "name": "3 ML insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "2",
+            "rxaui": "12349644",
+            "rxcui": "847230",
+            "score": "19.685014934539797",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "4",
+            "rxaui": "12349645",
+            "rxcui": "1604545",
+            "score": "19.350431442260742",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine Pen Injector",
+            "rank": "5",
+            "rxaui": "12267082",
+            "rxcui": "1653497",
+            "score": "19.182634353637695",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector [Basaglar]",
+            "rank": "6",
+            "rxaui": "12361674",
+            "rxcui": "1736864",
+            "score": "18.700764187812805",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector [Lantus]",
+            "rank": "6",
+            "rxaui": "12371403",
+            "rxcui": "1359856",
+            "score": "18.700764187812805",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector [Semglee]",
+            "rank": "6",
+            "rxaui": "12410282",
+            "rxcui": "2377232",
+            "score": "18.700764187812805",
+            "source": "RXNORM"
+          }
+        ],
+        "inputTerm": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/approximateTerm.json?term=insulin+glargine+100+UNT%2FML+Vial&maxEntries=10": {
+    "json": {
+      "approximateGroup": {
+        "candidate": [
+          {
+            "name": "insulin glargine 100 UNT/ML",
+            "rank": "1",
+            "rxaui": "12274598",
+            "rxcui": "343226",
+            "score": "16.506444931030273",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Injectable Solution",
+            "rank": "2",
+            "rxaui": "12329478",
+            "rxcui": "311041",
+            "score": "15.199843328475954",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "2",
+            "rxaui": "12349643",
+            "rxcui": "1359855",
+            "score": "15.199843328475954",
+            "source": "RXNORM"
+          },
+          {
+            "rank": "2",
+            "rxaui": "12744129",
+            "rxcui": "311041",
+            "score": "15.199843328475954",
+            "source": "MMSL"
+          },
+          {
+            "rank": "2",
+            "rxaui": "2378985",
+            "rxcui": "311041",
+            "score": "15.199843328475954",
+            "source": "MMSL"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Injectable Solution",
+            "rank": "2",
+            "rxaui": "7244374",
+            "rxcui": "311041",
+            "score": "15.199843328475954",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT/ML",
+            "rank": "7",
+            "rxaui": "12284697",
+            "rxcui": "1604538",
+            "score": "15.183146476745605",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML [Lantus]",
+            "rank": "8",
+            "rxaui": "12300367",
+            "rxcui": "575068",
+            "score": "15.027185916900635",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML [Basaglar]",
+            "rank": "8",
+            "rxaui": "12303743",
+            "rxcui": "1736860",
+            "score": "15.027185916900635",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML [Semglee]",
+            "rank": "8",
+            "rxaui": "12410269",
+            "rxcui": "2377131",
+            "score": "15.027185916900635",
+            "source": "RXNORM"
+          }
+        ],
+        "inputTerm": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/approximateTerm.json?term=insulin+glargine+300+UNT%2FML+Pen+Injector&maxEntries=10": {
+    "json": {
+      "approximateGroup": {
+        "candidate": [
+          {
+            "name": "insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "1",
+            "rxaui": "12349645",
+            "rxcui": "1604545",
+            "score": "21.455646514892578",
+            "source": "RXNORM"
+          },
+          {
+            "name": "3 ML insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "2",
+            "rxaui": "12350516",
+            "rxcui": "2002419",
+            "score": "20.566122088432312",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT/ML per 3 ML Pen Injector",
+            "rank": "3",
+            "rxaui": "11844606",
+            "rxcui": "2002419",
+            "score": "19.76658599555731",
+            "source": "RXNORM"
+          },
+          {
+            "name": "1.5 ML insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "3",
+            "rxaui": "12349609",
+            "rxcui": "1604539",
+            "score": "19.76658599555731",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT per 3 ML Pen Injector",
+            "rank": "3",
+            "rxaui": "7244453",
+            "rxcui": "847230",
+            "score": "19.76658599555731",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT per 3 ML Pen Injector",
+            "rank": "3",
+            "rxaui": "7244453",
+            "rxcui": "847230",
+            "score": "19.76658599555731",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin analog, glargine 300 UNT Pen Injector",
+            "rank": "7",
+            "rxaui": "11836603",
+            "rxcui": "847230",
+            "score": "19.71191654205322",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin analog, glargine 300 UNT Pen Injector",
+            "rank": "7",
+            "rxaui": "11836603",
+            "rxcui": "847230",
+            "score": "19.71191654205322",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT/ML Pen Injector [Toujeo]",
+            "rank": "9",
+            "rxaui": "12371405",
+            "rxcui": "1604546",
+            "score": "19.5378159840107",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "10",
+            "rxaui": "12349643",
+            "rxcui": "1359855",
+            "score": "19.350431442260742",
+            "source": "RXNORM"
+          }
+        ],
+        "inputTerm": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/approximateTerm.json?term=insulin+glargine+500+UNT%2FML+Pen+Injector&maxEntries=10": {
+    "json": {
+      "approximateGroup": {
+        "candidate": [
+          {
+            "name": "insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "1",
+            "rxaui": "12349643",
+            "rxcui": "1359855",
+            "score": "19.350431442260742",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "1",
+            "rxaui": "12349645",
+            "rxcui": "1604545",
+            "score": "19.350431442260742",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine Pen Injector",
+            "rank": "3",
+            "rxaui": "12267082",
+            "rxcui": "1653497",
+            "score": "19.182634353637695",
+            "source": "RXNORM"
+          },
+          {
+            "name": "3 ML insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "4",
+            "rxaui": "12349644",
+            "rxcui": "847230",
+            "score": "18.57438735961914",
+            "source": "RXNORM"
+          },
+          {
+            "name": "3 ML insulin glargine 100 UNT/ML Pen Injector",
+            "rank": "4",
+            "rxaui": "12349644",
+            "rxcui": "847230",
+            "score": "18.57438735961914",
+            "source": "RXNORM"
+          },
+          {
+            "name": "3 ML insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "4",
+            "rxaui": "12350516",
+            "rxcui": "2002419",
+            "score": "18.57438735961914",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT/ML per 3 ML Pen Injector",
+            "rank": "7",
+            "rxaui": "11844606",
+            "rxcui": "2002419",
+            "score": "17.87681839846659",
+            "source": "RXNORM"
+          },
+          {
+            "name": "1.5 ML insulin glargine 300 UNT/ML Pen Injector",
+            "rank": "7",
+            "rxaui": "12349609",
+            "rxcui": "1604539",
+            "score": "17.87681839846659",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT per 3 ML Pen Injector",
+            "rank": "7",
+            "rxaui": "7244453",
+            "rxcui": "847230",
+            "score": "17.87681839846659",
+            "source": "RXNORM"
+          },
+          {
+            "name": "insulin glargine 300 UNT per 3 ML Pen Injector",
+            "rank": "7",
+            "rxaui": "7244453",
+            "rxcui": "847230",
+            "score": "17.87681839846659",
+            "source": "RXNORM"
+          }
+        ],
+        "inputTerm": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/approximateTerm.json?term=qqqxyz+wobble+plinth&maxEntries=10": {
+    "json": {
+      "approximateGroup": {
+        "inputTerm": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=insulin+glargine+100+UNT%2FML+Injectable+Solution": {
+    "json": {
+      "idGroup": {
+        "rxnormId": [
+          "311041"
+        ]
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=insulin+glargine+100+UNT%2FML+Pen+Injector": {
+    "json": {
+      "idGroup": {}
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=insulin+glargine+100+UNT%2FML+Vial": {
+    "json": {
+      "idGroup": {}
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=insulin+glargine+300+UNT%2FML+Pen+Injector": {
+    "json": {
+      "idGroup": {}
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=insulin+glargine+500+UNT%2FML+Pen+Injector": {
+    "json": {
+      "idGroup": {}
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui.json?name=qqqxyz+wobble+plinth": {
+    "json": {
+      "idGroup": {}
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/1359855/properties.json": {
+    "json": {},
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/1604545/properties.json": {
+    "json": {},
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/2002419/allProperties.json?prop=ATTRIBUTES": {
+    "json": {
+      "propConceptGroup": {
+        "propConcept": [
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "AVAILABLE_STRENGTH",
+            "propValue": "300 UNT/ML"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "GENERAL_CARDINALITY",
+            "propValue": "SINGLE"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "HUMAN_DRUG",
+            "propValue": "US"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "PRESCRIBABLE",
+            "propValue": "Y"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "QUANTITY",
+            "propValue": "3 ML"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "RXNAV_HUMAN_DRUG",
+            "propValue": "US"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "SCHEDULE",
+            "propValue": "0"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "TTY",
+            "propValue": "SCD"
+          }
+        ]
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/2002419/properties.json": {
+    "json": {
+      "properties": {
+        "language": "ENG",
+        "name": "3 ML insulin glargine 300 UNT/ML Pen Injector",
+        "rxcui": "2002419",
+        "suppress": "N",
+        "synonym": "insulin glargine 300 UNT/ML per 3 ML Pen Injector",
+        "tty": "SCD",
+        "umlscui": ""
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/2002419/related.json?tty=DF": {
+    "json": {
+      "relatedGroup": {
+        "conceptGroup": [
+          {
+            "conceptProperties": [
+              {
+                "language": "ENG",
+                "name": "Pen Injector",
+                "rxcui": "1649571",
+                "suppress": "N",
+                "synonym": "",
+                "tty": "DF",
+                "umlscui": ""
+              }
+            ],
+            "tty": "DF"
+          }
+        ],
+        "rxcui": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/2002419/related.json?tty=IN": {
+    "json": {
+      "relatedGroup": {
+        "conceptGroup": [
+          {
+            "conceptProperties": [
+              {
+                "language": "ENG",
+                "name": "insulin glargine",
+                "rxcui": "274783",
+                "suppress": "N",
+                "synonym": "",
+                "tty": "IN",
+                "umlscui": ""
+              }
+            ],
+            "tty": "IN"
+          }
+        ],
+        "rxcui": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/311041/allProperties.json?prop=ATTRIBUTES": {
+    "json": {
+      "propConceptGroup": {
+        "propConcept": [
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "AVAILABLE_STRENGTH",
+            "propValue": "100 UNT/ML"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "GENERAL_CARDINALITY",
+            "propValue": "SINGLE"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "HUMAN_DRUG",
+            "propValue": "US"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "PRESCRIBABLE",
+            "propValue": "Y"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "RXNAV_HUMAN_DRUG",
+            "propValue": "US"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "SCHEDULE",
+            "propValue": "0"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "TTY",
+            "propValue": "SCD"
+          }
+        ]
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/311041/properties.json": {
+    "json": {
+      "properties": {
+        "language": "ENG",
+        "name": "insulin glargine 100 UNT/ML Injectable Solution",
+        "rxcui": "311041",
+        "suppress": "N",
+        "synonym": "insulin analog, glargine 100 UNT/ML Injectable Solution",
+        "tty": "SCD",
+        "umlscui": ""
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/311041/related.json?tty=DF": {
+    "json": {
+      "relatedGroup": {
+        "conceptGroup": [
+          {
+            "conceptProperties": [
+              {
+                "language": "ENG",
+                "name": "Injectable Solution",
+                "rxcui": "316949",
+                "suppress": "N",
+                "synonym": "",
+                "tty": "DF",
+                "umlscui": ""
+              }
+            ],
+            "tty": "DF"
+          }
+        ],
+        "rxcui": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/311041/related.json?tty=IN": {
+    "json": {
+      "relatedGroup": {
+        "conceptGroup": [
+          {
+            "conceptProperties": [
+              {
+                "language": "ENG",
+                "name": "insulin glargine",
+                "rxcui": "274783",
+                "suppress": "N",
+                "synonym": "",
+                "tty": "IN",
+                "umlscui": ""
+              }
+            ],
+            "tty": "IN"
+          }
+        ],
+        "rxcui": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/847230/allProperties.json?prop=ATTRIBUTES": {
+    "json": {
+      "propConceptGroup": {
+        "propConcept": [
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "AVAILABLE_STRENGTH",
+            "propValue": "100 UNT/ML"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "GENERAL_CARDINALITY",
+            "propValue": "SINGLE"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "HUMAN_DRUG",
+            "propValue": "US"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "PRESCRIBABLE",
+            "propValue": "Y"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "QUANTITY",
+            "propValue": "3 ML"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "RXNAV_HUMAN_DRUG",
+            "propValue": "US"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "SCHEDULE",
+            "propValue": "0"
+          },
+          {
+            "propCategory": "ATTRIBUTES",
+            "propName": "TTY",
+            "propValue": "SCD"
+          }
+        ]
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/847230/properties.json": {
+    "json": {
+      "properties": {
+        "language": "ENG",
+        "name": "3 ML insulin glargine 100 UNT/ML Pen Injector",
+        "rxcui": "847230",
+        "suppress": "N",
+        "synonym": "insulin analog, glargine 300 UNT Pen Injector",
+        "tty": "SCD",
+        "umlscui": ""
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/847230/related.json?tty=DF": {
+    "json": {
+      "relatedGroup": {
+        "conceptGroup": [
+          {
+            "conceptProperties": [
+              {
+                "language": "ENG",
+                "name": "Pen Injector",
+                "rxcui": "1649571",
+                "suppress": "N",
+                "synonym": "",
+                "tty": "DF",
+                "umlscui": ""
+              }
+            ],
+            "tty": "DF"
+          }
+        ],
+        "rxcui": null
+      }
+    },
+    "status": 200
+  },
+  "https://rxnav.nlm.nih.gov/REST/rxcui/847230/related.json?tty=IN": {
+    "json": {
+      "relatedGroup": {
+        "conceptGroup": [
+          {
+            "conceptProperties": [
+              {
+                "language": "ENG",
+                "name": "insulin glargine",
+                "rxcui": "274783",
+                "suppress": "N",
+                "synonym": "",
+                "tty": "IN",
+                "umlscui": ""
+              }
+            ],
+            "tty": "IN"
+          }
+        ],
+        "rxcui": null
+      }
+    },
+    "status": 200
+  }
+}
