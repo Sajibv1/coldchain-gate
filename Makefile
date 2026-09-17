@@ -1,7 +1,7 @@
 # Cold-chain demo. `make seed` then `make test` are the two that matter.
 #
-# Everything runs out of .venv, created per BUILD_PLAN.md §0. Override with
-# `make PY=python3 ...` if you would rather use a system interpreter.
+# Everything runs out of .venv; the Quickstart in README.md creates it. Override
+# with `make PY=python3 ...` if you would rather use a system interpreter.
 
 PY ?= .venv/bin/python
 PORT ?= 8000
