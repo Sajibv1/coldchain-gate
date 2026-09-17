@@ -102,49 +102,37 @@ prints those instructions if you hit it.
 
 ## Architecture
 
-```
-                        ┌──────────────────────────────────────────────┐
-   HL7 v2 OMP^O09       │  app/main.py — FastAPI                       │
-   ────────────────────▶│  POST /indent          ER7 body              │
-                        │  POST /indent/demo/{name}                    │
-   python -m            │  GET  /fixtures   GET /health   /  → ui/     │
-     app.pipeline ─────▶│                                              │
-                        └───────────────────┬──────────────────────────┘
-                                            │  run_in_threadpool (all work is blocking)
-                        ┌───────────────────▼──────────────────────────┐
-                        │  app/pipeline.py — process(), the one path   │
-                        │  the CLI and the API both take               │
-                        └──┬────────┬─────────┬──────────┬─────────────┘
-                           │        │         │          │
-              1. parse     │        │ 2. gate │ 3. write │ 4. notify
-                           ▼        ▼         ▼          ▼
-                    app/hl7/   app/safety/  app/fhir/  app/safety/
-                    parse.py   validate.py  build.py   notify.py
-                    (hl7apy)        │           │          │
-                           │        │           │          │
-                           │        │           │          └──▶ phi.assert_alert_shaped()
-                           │        │           │               the four-field allowlist,
-                           │        │           │               checked immediately before
-                           │        │           │               send — raises rather than
-                           │        │           │               scrubbing
-                           │        │           │               ──▶ the ward's phone, carrying
-                           │        │           │                   an HMAC token per notification
-                           │        │           │
-                           │        │           └──▶ MedicationDispense + AuditEvent refs
-                           │        │                ──▶ FHIR R4
-                           │        │
-                           │        ├──▶ correlate() ──▶ FHIR R4
-                           │        │      reads the MedicationRequest; placer and
-                           │        │      filler must resolve to the same single one
-                           │        │
-                           │        └──▶ app/rxnorm/normalize.py ──▶ RxNav / NIH
-                           │               ingredient, strength and dose form compared
-                           │               as codes — never as names
-                           │
-                           └──────────────────▶ app/audit/chain.py
-                                                every stage appends to one in-process
-                                                Trail, flushed at the end of the run as
-                                                hash-chained AuditEvents (tamper-evident)
+```mermaid
+flowchart TD
+    HL7(["HL7 v2 OMP^O09<br/>ER7 body"]) --> API
+    CLI(["python -m app.pipeline"]) --> PIPE
+
+    API["app/main.py — FastAPI<br/>POST /indent<br/>POST /indent/demo/{name}<br/>GET /fixtures · GET /health<br/>/ → ui/index.html"]
+    API -->|run_in_threadpool, all work is blocking| PIPE
+
+    PIPE["app/pipeline.py — process()<br/>the one path the CLI and the API both take"]
+
+    PIPE --> PARSE["1 · parse<br/>app/hl7/parse.py<br/>hl7apy"]
+    PIPE --> GATE["2 · gate<br/>app/safety/validate.py"]
+    PIPE --> WRITE["3 · write<br/>app/fhir/build.py"]
+    PIPE --> NOTIFY["4 · notify<br/>app/safety/notify.py"]
+
+    GATE --> CORR["correlate()<br/>placer and filler must resolve<br/>to the same single MedicationRequest"]
+    CORR --> FHIR1[("FHIR R4")]
+    GATE --> RX["app/rxnorm/normalize.py<br/>ingredient, strength and dose form<br/>compared as codes, never as names"]
+    RX --> RXNAV[("RxNav / NIH")]
+
+    WRITE --> RES["MedicationDispense<br/>+ AuditEvent refs"]
+    RES --> FHIR2[("FHIR R4")]
+
+    NOTIFY --> PHI["phi.assert_alert_shaped()<br/>the four-field allowlist, checked<br/>immediately before send:<br/>raises rather than scrubbing"]
+    PHI --> PHONE(["the ward's phone, carrying<br/>an HMAC token per notification"])
+
+    PARSE --> TRAIL
+    GATE --> TRAIL
+    WRITE --> TRAIL
+    NOTIFY --> TRAIL
+    TRAIL["app/audit/chain.py<br/>every stage appends to one in-process Trail,<br/>flushed at the end of the run as<br/>hash-chained AuditEvents, tamper-evident"]
 ```
 
 Every stage blocks — `httpx` and `hl7apy` are both synchronous — so the whole pipeline runs in
