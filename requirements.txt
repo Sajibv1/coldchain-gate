@@ -1,7 +1,7 @@
 # Runtime dependencies only, for the serverless deploy in api/index.py.
 # Mirrors [project].dependencies in pyproject.toml. uvicorn is deliberately absent: it
 # serves the app locally and is not imported by anything the function loads.
-fastapi>=0.115
-httpx>=0.27
-hl7apy>=1.3.5
-pydantic-settings>=2.4
+fastapi==0.115.0
+httpx==0.27.2
+hl7apy==1.3.5
+pydantic-settings==2.4.0

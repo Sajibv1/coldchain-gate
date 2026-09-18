@@ -46,6 +46,12 @@ make test                     # 323 tests, fully offline
 curl -s localhost:8000/fixtures      # the demo indents, by name
 ```
 
+The HTTP and test dependencies are deliberately pinned and the full offline suite runs in
+GitHub Actions on every push and pull request. The pins protect the ASGI test harness from a
+future FastAPI/Starlette/httpx combination that has not been verified by this project;
+upgrading a framework is a deliberate change accompanied by a green suite, not a resolver
+surprise.
+
 **Open `http://127.0.0.1:8000` in a browser.** That is the demo page: seven buttons, one per
 fixture, and each one sends a real HL7 message through the pipeline and shows what came back —
 the verdict, the four fields that crossed to the phone, and the audit chain the run wrote. Six

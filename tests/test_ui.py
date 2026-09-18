@@ -32,12 +32,11 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.config import Settings
 from app.hl7 import fixtures
 from app.main import Service, create_app
 from app.models import ALERT_FIELDS, HoldCode
+from app.testing import ASGIClient
 from tests.conftest import RECORDED_RXNAV, RecordedRxNavTransport, TEST_SETTINGS
 from tests.test_api import assert_no_phi
 
@@ -85,7 +84,8 @@ def fresh() -> dict[str, Any]:
         return Service(settings, rxnav_transport=RecordedRxNavTransport(recorded_rxnav))
 
     runs: dict[str, Any] = {}
-    with TestClient(create_app(factory)) as client:
+    service = factory()
+    with ASGIClient(create_app(factory), service) as client:
         for name in sorted(fixtures.FIXTURES):
             response = client.post(f"/indent/demo/{name}")
             assert response.status_code == 200, f"{name} answered {response.status_code}"

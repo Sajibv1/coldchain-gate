@@ -41,7 +41,7 @@ smoke:  ## POST one fixture to a server that is already running (see: make run-o
 
 .PHONY: test
 test:  ## Run the test suite (offline; no network)
-	$(PY) -m pytest
+	$(PY) -B -m pytest -p no:cacheprovider
 
 .PHONY: integration
 integration:  ## Run the tests that hit the live sandbox and RxNav

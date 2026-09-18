@@ -14,12 +14,11 @@ from collections.abc import Iterator
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
-
 from app.config import Settings
 from app.hl7 import fixtures
 from app.main import MAX_BODY_BYTES, Service, create_app
 from app.safety import phi
+from app.testing import ASGIClient
 from tests.conftest import RecordedRxNavTransport, TEST_SETTINGS
 
 #: Everything a response must never contain, from `app/demo.py` and `app/hl7/fixtures.py`.
@@ -43,7 +42,7 @@ PAGE_ROUTE = "/"
 
 
 @pytest.fixture
-def client(rxnav_responses: dict) -> Iterator[TestClient]:
+def client(rxnav_responses: dict) -> Iterator[ASGIClient]:
     """A TestClient over a service wired to the offline transports.
 
     ``dry_run`` is forced rather than inherited so the suite cannot be flipped onto the
@@ -57,7 +56,8 @@ def client(rxnav_responses: dict) -> Iterator[TestClient]:
             rxnav_transport=RecordedRxNavTransport(rxnav_responses),
         )
 
-    with TestClient(create_app(factory)) as client:
+    service = factory()
+    with ASGIClient(create_app(factory), service) as client:
         yield client
 
 
@@ -71,7 +71,7 @@ def assert_no_phi(payload: object) -> None:
 # -- the happy path ---------------------------------------------------------------------
 
 
-def test_a_clean_indent_is_dispatched(client: TestClient) -> None:
+def test_a_clean_indent_is_dispatched(client: ASGIClient) -> None:
     response = client.post("/indent/demo/clean")
 
     assert response.status_code == 200
@@ -81,7 +81,7 @@ def test_a_clean_indent_is_dispatched(client: TestClient) -> None:
     assert body["notified"] is True
 
 
-def test_the_response_carries_the_alert_the_device_would_receive(client: TestClient) -> None:
+def test_the_response_carries_the_alert_the_device_would_receive(client: ASGIClient) -> None:
     body = client.post("/indent/demo/clean").json()
 
     assert set(body["alert"]) == {
@@ -96,7 +96,7 @@ def test_the_response_carries_the_alert_the_device_would_receive(client: TestCli
     assert len(body["alert"]["eta"]) == 5 and ":" in body["alert"]["eta"]
 
 
-def test_the_response_carries_a_token_instead_of_an_order_number(client: TestClient) -> None:
+def test_the_response_carries_a_token_instead_of_an_order_number(client: ASGIClient) -> None:
     """The token is the correlation handle, and it is the only one on offer.
 
     Asserted as a pair with the PHI check below: it would be easy to satisfy "no order
@@ -109,7 +109,7 @@ def test_the_response_carries_a_token_instead_of_an_order_number(client: TestCli
     assert body["token"] not in PHI
 
 
-def test_a_client_request_id_is_never_reflected(client: TestClient) -> None:
+def test_a_client_request_id_is_never_reflected(client: ASGIClient) -> None:
     """Trace headers are untrusted and commonly contain patient-linkable values."""
     response = client.post(
         "/indent",
@@ -122,7 +122,7 @@ def test_a_client_request_id_is_never_reflected(client: TestClient) -> None:
     assert_no_phi(response.text)
 
 
-def test_the_audit_trail_travels_with_the_response_and_verifies(client: TestClient) -> None:
+def test_the_audit_trail_travels_with_the_response_and_verifies(client: ASGIClient) -> None:
     body = client.post("/indent/demo/clean").json()
 
     assert [event["subtype"] for event in body["audit"]] == [
@@ -146,14 +146,14 @@ def test_the_audit_trail_travels_with_the_response_and_verifies(client: TestClie
         "/indent/demo/multi_item",
     ],
 )
-def test_no_response_contains_a_patient_value(client: TestClient, route: str) -> None:
+def test_no_response_contains_a_patient_value(client: ASGIClient, route: str) -> None:
     response = client.post(route)
 
     assert response.status_code == 200
     assert_no_phi(response.text)
 
 
-def test_every_route_is_scanned_for_patient_values(client: TestClient) -> None:
+def test_every_route_is_scanned_for_patient_values(client: ASGIClient) -> None:
     """The claim is "no route returns PHI", so the check has to *be* every route.
 
     The earlier scan covers the indent routes, which are the ones that obviously carry patient
@@ -206,7 +206,7 @@ def test_every_route_is_scanned_for_patient_values(client: TestClient) -> None:
             assert value not in page, f"{value!r} reached the demo page"
 
 
-def test_a_held_indent_notifies_nobody(client: TestClient) -> None:
+def test_a_held_indent_notifies_nobody(client: ASGIClient) -> None:
     """No alert key at all on a hold, rather than an empty one.
     """
     body = client.post("/indent/demo/strength_mismatch").json()
@@ -218,7 +218,7 @@ def test_a_held_indent_notifies_nobody(client: TestClient) -> None:
     assert "notified" not in body
 
 
-def test_a_hold_still_records_a_trail(client: TestClient) -> None:
+def test_a_hold_still_records_a_trail(client: ASGIClient) -> None:
     """Stopping is an outcome, and outcomes are audited — the first two events only."""
     body = client.post("/indent/demo/strength_mismatch").json()
 
@@ -228,7 +228,7 @@ def test_a_hold_still_records_a_trail(client: TestClient) -> None:
     ]
 
 
-def test_the_hold_reason_is_scrubbed_of_anything_patient_shaped(client: TestClient) -> None:
+def test_the_hold_reason_is_scrubbed_of_anything_patient_shaped(client: ASGIClient) -> None:
     body = client.post("/indent/demo/strength_mismatch").json()
 
     # The detail names the drugs and the strengths, because that is the clinical finding a
@@ -240,7 +240,7 @@ def test_the_hold_reason_is_scrubbed_of_anything_patient_shaped(client: TestClie
 # -- transport handling ------------------------------------------------------------------
 
 
-def test_a_message_with_lf_terminators_is_accepted(client: TestClient) -> None:
+def test_a_message_with_lf_terminators_is_accepted(client: ASGIClient) -> None:
     """What curl, a heredoc, or a copy-paste actually sends.
 
     Without the normalisation in ``read_er7`` this is a hold for every reviewer who tries
@@ -253,14 +253,14 @@ def test_a_message_with_lf_terminators_is_accepted(client: TestClient) -> None:
     assert response.json()["status"] == "dispensed"
 
 
-def test_a_crlf_message_is_accepted(client: TestClient) -> None:
+def test_a_crlf_message_is_accepted(client: ASGIClient) -> None:
     message = fixtures.er7("clean").replace("\r", "\r\n")
     response = client.post("/indent", content=message.encode())
 
     assert response.json()["status"] == "dispensed"
 
 
-def test_an_unreadable_body_is_a_hold_not_a_400(client: TestClient) -> None:
+def test_an_unreadable_body_is_a_hold_not_a_400(client: ASGIClient) -> None:
     """The deliberate choice: garbage is a clinical-style outcome with a code.
 
     A 4xx would put the failure in an access log nobody reads and leave no trail. A hold
@@ -274,21 +274,21 @@ def test_an_unreadable_body_is_a_hold_not_a_400(client: TestClient) -> None:
     assert body["code"] == "unparseable_indent"
 
 
-def test_an_empty_body_is_also_a_hold(client: TestClient) -> None:
+def test_an_empty_body_is_also_a_hold(client: ASGIClient) -> None:
     response = client.post("/indent", content=b"")
 
     assert response.status_code == 200
     assert response.json()["status"] == "held"
 
 
-def test_a_body_over_the_cap_is_refused_without_being_processed(client: TestClient) -> None:
+def test_a_body_over_the_cap_is_refused_without_being_processed(client: ASGIClient) -> None:
     response = client.post("/indent", content=b"x" * (MAX_BODY_BYTES + 1))
 
     assert response.status_code == 413
     assert response.json()["code"] == "request_too_large"
 
 
-def test_an_unknown_fixture_names_the_ones_that_exist(client: TestClient) -> None:
+def test_an_unknown_fixture_names_the_ones_that_exist(client: ASGIClient) -> None:
     response = client.post("/indent/demo/nope")
 
     assert response.status_code == 404
@@ -300,7 +300,7 @@ def test_an_unknown_fixture_names_the_ones_that_exist(client: TestClient) -> Non
 # -- process state -----------------------------------------------------------------------
 
 
-def test_the_notifier_remembers_deliveries_across_requests(client: TestClient) -> None:
+def test_the_notifier_remembers_deliveries_across_requests(client: ASGIClient) -> None:
     """The point of a stateful notifier: it stands in for the phone, so it must persist.
 
     Per-request notifiers would pass every other test in this file and make the demo
@@ -314,7 +314,7 @@ def test_the_notifier_remembers_deliveries_across_requests(client: TestClient) -
 
 
 def test_a_failed_delivery_is_reported_and_does_not_undo_the_dispense(
-    client: TestClient,
+    client: ASGIClient,
 ) -> None:
     service: Service = client.app.state.service
     service.notifier.fail_next = 1
@@ -330,7 +330,7 @@ def test_a_failed_delivery_is_reported_and_does_not_undo_the_dispense(
     assert body["audit"][-1]["outcome"] == "8"
 
 
-def test_the_health_view_reports_configuration_not_liveness(client: TestClient) -> None:
+def test_the_health_view_reports_configuration_not_liveness(client: ASGIClient) -> None:
     body = client.get("/health").json()
 
     assert body["mode"].startswith("dry-run")
@@ -353,7 +353,8 @@ def test_the_health_view_names_the_live_api_when_nothing_is_replayed() -> None:
     """
     settings = Settings(**{**TEST_SETTINGS.model_dump(), "fhir_mode": "dry-run"})
 
-    with TestClient(create_app(lambda: Service(settings))) as client:
+    service = Service(settings)
+    with ASGIClient(create_app(lambda: service), service) as client:
         assert client.get("/health").json()["rxnav"] == settings.rxnav_root
 
 
@@ -378,7 +379,7 @@ def test_the_mode_string_says_what_the_process_talks_to() -> None:
     assert "RxNav" in live and "HAPI" in live, f"the live mode does not say so: {live!r}"
 
 
-def test_a_dispense_is_counted_as_delivered_and_never_as_held(client: TestClient) -> None:
+def test_a_dispense_is_counted_as_delivered_and_never_as_held(client: ASGIClient) -> None:
     """The notification counters have to mean what their names say.
 
     This is the test that was missing when the field was ``notifications_held`` and computed
@@ -406,7 +407,7 @@ def test_a_dispense_is_counted_as_delivered_and_never_as_held(client: TestClient
     assert held["indents_processed"] == 2, "the hold did not reach the pipeline at all"
 
 
-def test_the_ui_is_served_at_the_root(client: TestClient) -> None:
+def test_the_ui_is_served_at_the_root(client: ASGIClient) -> None:
     response = client.get("/")
 
     assert response.status_code == 200
@@ -416,7 +417,7 @@ def test_the_ui_is_served_at_the_root(client: TestClient) -> None:
 # -- the seam itself ---------------------------------------------------------------------
 
 
-def test_an_infrastructure_outage_is_a_503(client: TestClient) -> None:
+def test_an_infrastructure_outage_is_a_503(client: ASGIClient) -> None:
     """Both dependency failures map to 503, which is the status a caller should retry.
 
     Driven by replacing the FHIR transport under the live service, because the interesting
@@ -442,7 +443,7 @@ def test_an_infrastructure_outage_is_a_503(client: TestClient) -> None:
 
 @pytest.mark.parametrize("route", ["/indent", "/indent/demo/clean"])
 def test_a_payload_that_is_not_the_allowlist_is_a_500_and_says_nothing(
-    client: TestClient, route: str
+    client: ASGIClient, route: str
 ) -> None:
     """The one route where the response body matters more than the status code.
 

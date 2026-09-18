@@ -10,8 +10,8 @@ So the same seven runs are embedded in the page, and this script is how they are
 
     .venv/bin/python scripts/build_ui_demo.py
 
-**It records by driving the real code.** The runs are captured from a real `Service` over a
-real `TestClient`, offline: `fhir_mode="dry-run"` puts FHIR in memory, and RxNav replays the
+**It records by driving the real code.** The runs are captured from a real `Service` over an
+in-process ASGI client, offline: `fhir_mode="dry-run"` puts FHIR in memory, and RxNav replays the
 recordings `scripts/record_rxnav.py` captured from the live API. Nothing here is hand-written,
 so the page cannot claim an outcome the pipeline does not produce. `tests/test_ui.py` asserts
 the embedded block still matches a fresh run, which is what keeps that true.
@@ -38,11 +38,10 @@ from typing import Any
 # Run as a plain script, so the repo root is not on the path by default.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from fastapi.testclient import TestClient  # noqa: E402
-
 from app.config import Settings  # noqa: E402
 from app.hl7 import fixtures  # noqa: E402
 from app.main import Service, create_app  # noqa: E402
+from app.testing import ASGIClient  # noqa: E402
 from tests.conftest import (  # noqa: E402
     RECORDED_RXNAV,
     TEST_SETTINGS,
@@ -68,7 +67,8 @@ def collect() -> dict[str, Any]:
         return Service(settings, rxnav_transport=RecordedRxNavTransport(recorded))
 
     runs: dict[str, Any] = {}
-    with TestClient(create_app(factory)) as client:
+    service = factory()
+    with ASGIClient(create_app(factory), service) as client:
         for name in sorted(fixtures.FIXTURES):
             response = client.post(f"/indent/demo/{name}")
             # A hold is a 200 and a finding; anything else here is a broken fixture or a

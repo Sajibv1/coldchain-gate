@@ -4,15 +4,23 @@ version = "0.1.0"
 description = "Case 1 — Pharmacy cold chain to IPD: FHIR/HL7 v2 safety gate and PHI-safe dispatch alert"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.115",
-    "uvicorn[standard]>=0.30",
-    "httpx>=0.27",
-    "hl7apy>=1.3.5",
-    "pydantic-settings>=2.4",
+    # This FastAPI release constrains Starlette to its compatible 0.38 line. Pinning the
+    # boundary keeps the HTTP ASGI test harness reproducible instead of resolver-dependent.
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.30.6",
+    "httpx==0.27.2",
+    "hl7apy==1.3.5",
+    "pydantic-settings==2.4.0",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "pytest-asyncio>=0.24"]
+dev = [
+    "pytest==8.4.2",
+    "pytest-asyncio==0.24.0",
+    # The ASGI test transport is part of the HTTP harness. Keep it in the compatibility
+    # set exercised by CI rather than accepting a future AnyIO release.
+    "anyio==4.4.0",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
