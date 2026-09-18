@@ -1,9 +1,9 @@
 # Cold-chain demo. `make seed` then `make test` are the two that matter.
 #
-# Everything runs out of .venv; the Quickstart in README.md creates it. Override
-# with `make PY=python3 ...` if you would rather use a system interpreter.
-
-PY ?= .venv/bin/python
+# Prefer the virtualenv created by the Quickstart, but fall back to the active/system Python
+# for CI runners, where dependencies are installed by the runner rather than into `.venv`.
+# Override explicitly with `make PY=/path/to/python ...` when needed.
+PY ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 PORT ?= 8000
 
 .PHONY: help
