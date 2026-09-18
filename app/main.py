@@ -337,7 +337,7 @@ def create_app(service_factory: Callable[[], Service] | None = None) -> FastAPI:
         """
         body = await request.body()
         if len(body) > MAX_BODY_BYTES:
-            return JSONResponse(TOO_LARGE, status_code=status.HTTP_413_CONTENT_TOO_LARGE)
+            return JSONResponse(TOO_LARGE, status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
 
         service: Service = request.app.state.service
         # Do not accept or reflect a client correlation header here.  Callers commonly put
